@@ -1,75 +1,85 @@
-# AI-Based Deadlock Detection and Resolution
+🛠 AI-Powered Deadlock Detection & Resolution Tool
+🔍 Overview
+The AI-Powered Deadlock Detection & Resolution Tool is a smart system designed to detect and resolve deadlocks in process scheduling. By leveraging graph theory and AI-based algorithms, it analyzes dependencies, identifies potential deadlocks, and provides an automated resolution mechanism. The tool is built with PyQt6, NetworkX, and NumPy, featuring an intuitive Graphical User Interface (GUI) to visualize and resolve deadlocks efficiently.
 
-## Overview
-This project implements an AI-driven system to **detect and resolve deadlocks** using **Machine Learning (ML), Reinforcement Learning (RL), and Graph Theory**. It simulates deadlock conditions, trains a neural network to detect deadlocks, and applies deadlock resolution strategies to mitigate issues dynamically.
+👥 Team Members
+This project is developed by:
 
-## Features
-- **Deadlock Detection** using a **Resource Allocation Graph (RAG)**.
-- **Machine Learning Model** trained on synthetic deadlock scenarios.
-- **Reinforcement Learning-based Deadlock Resolution**.
-- **Graph Visualization** of the process-resource allocation.
-- **Deadlock Breaking Mechanism** to automatically resolve detected deadlocks.
+Adarsh Kumar
 
-## Technologies Used
-- **Python** (Primary Language)
-- **PyTorch** (Neural Network for Deadlock Detection)
-- **NetworkX** (Graph-based Deadlock Detection)
-- **Matplotlib** (Graph Visualization)
-- **Scikit-Learn** (Dataset Splitting & Processing)
-- **Numpy** (Numerical Operations)
+Anurag Anand Jha
 
-## Installation
-Ensure you have **Python 3.8+** installed. Install dependencies using:
-```bash
-pip install torch networkx numpy matplotlib scikit-learn
-```
+Sukhpreet Kaur
 
-For Jupyter Notebook users:
-```python
-!pip install torch networkx numpy matplotlib scikit-learn
-```
+📌 Key Features
+✅ Graph-Based Deadlock Detection – Uses NetworkX to represent process-resource dependencies as a Resource Allocation Graph (RAG).
+✅ Detection of Multiple Deadlock Types – Identifies deadlocks based on the Four Coffman Conditions:
 
-## Usage
-### 1. Run the AI Model Training
-```python
-from deadlock_ai import train_deadlock_nn
-model = train_deadlock_nn()
-```
+Mutual Exclusion
 
-### 2. Detect & Resolve Deadlocks
-```python
-from deadlock_ai import DeadlockDetector, resolve_deadlock
+Hold and Wait
 
-detector = DeadlockDetector()
-detector.add_process_resource("P1", "R1", holds=True)
-detector.add_process_resource("P2", "R2", holds=True)
-detector.add_process_resource("P1", "R2")
-detector.add_process_resource("P2", "R1")  # Creates a circular wait (Deadlock)
+No Preemption
 
-detector.visualize_graph()
-print("Deadlock Detected:", detector.detect_deadlock())
-resolve_deadlock(detector)
-```
+Circular Wait
+✅ Automated Deadlock Resolution – Preempts a process or modifies dependencies to break the deadlock cycle.
+✅ Interactive GUI – Built using PyQt6, providing an intuitive interface for entering dependencies, detecting, and resolving deadlocks.
+✅ Real-Time Graph Visualization – Highlights deadlocked processes in red and resolved processes in green.
+✅ Matrix-Based Input System – Allows users to enter process-resource allocations in a structured format.
 
-## Deadlock Resolution Strategy
-The AI system resolves deadlocks using:
-1. **Process Termination:** Kills the least disruptive process.
-2. **Graph Update:** Removes terminated process from RAG.
-3. **Graph Re-evaluation:** Re-checks if deadlock persists.
 
-## Future Improvements
-- **Enhance RL Agent** for smarter deadlock prevention.
-- **Improve Training Data** using real-world deadlock scenarios.
-- **Deploy as a Web Service** for integration in production systems.
+⚙️ Installation
+Follow these steps to install dependencies and run the tool:
 
-## License
-This project is **open-source** under the **MIT License**. Feel free to use, modify, and contribute!
+bash
+Copy
+Edit
+# Clone the repository
+git clone https://github.com/your-username/deadlock-detection-ai.git
+cd deadlock-detection-ai
 
----
+# Install required dependencies
+pip install PyQt6 networkx numpy
 
-### Contributors
-adarsh
-anuraj
-sukhpreet
-*Project Lead & Developer*
+# Run the application
+python main.py
+🎯 How It Works
+Define Process-Resource Dependencies
 
+Users input a matrix defining which processes hold or request resources.
+
+Graph-Based Deadlock Detection
+
+The system constructs a Resource Allocation Graph (RAG) and checks for cycles.
+
+Deadlock Identification
+
+If a cycle exists, the system identifies the deadlocked processes.
+
+Automated Deadlock Resolution
+
+The AI suggests and executes preemptive actions to resolve the deadlock.
+
+Visualization & Updates
+
+The UI updates with real-time feedback, showing the changes made to resolve deadlocks.
+
+🏗️ Future Enhancements
+🔹 Support for Dynamic Resource Allocation – Extend the system to handle dynamic process creation and resource requests.
+🔹 Machine Learning Integration – Use AI models to predict and prevent deadlocks.
+🔹 Simulation Mode – Allow users to run step-by-step deadlock simulation for learning purposes.
+🔹 Priority-Based Resource Allocation – Implement priority handling to resolve deadlocks based on process importance.
+
+🤝 Contribution Guidelines
+Contributions are welcome! If you'd like to improve the project, follow these steps:
+
+Fork the repository.
+
+Create a feature branch (feature-new-improvement).
+
+Commit your changes.
+
+Push to your fork and create a Pull Request.
+
+📜 License
+This project is licensed under the MIT License.
