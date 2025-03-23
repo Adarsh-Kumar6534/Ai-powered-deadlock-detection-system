@@ -1,31 +1,9 @@
-import networkx as nx
-import random
-import numpy as np
-import matplotlib.pyplot as plt
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-from collections import deque
-from sklearn.model_selection import train_test_split
+import sys
+from PyQt6.QtWidgets import QApplication
+from deadlock_detection.ui import DeadlockDetectionUI
 
-# Simulated dataset generation for AI training
-def generate_deadlock_data(samples=1000, max_processes=10, max_resources=10):
-    data = []
-    labels = []
-    for _ in range(samples):
-        process_count = random.randint(3, max_processes)
-        resource_count = random.randint(3, max_resources)
-
-        allocation = np.zeros((max_processes, max_resources))
-        request = np.zeros((max_processes, max_resources))
-
-        allocation[:process_count, :resource_count] = np.random.randint(0, 2, (process_count, resource_count))
-        request[:process_count, :resource_count] = np.random.randint(0, 2, (process_count, resource_count))
-
-        has_deadlock = random.choice([0, 1])  # Random label
-
-        data.append(np.hstack((allocation.flatten(), request.flatten())))
-        labels.append(has_deadlock)
-
-    return np.array(data), np.array(labels)
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = DeadlockDetectionUI()
+    window.show()
+    sys.exit(app.exec())
