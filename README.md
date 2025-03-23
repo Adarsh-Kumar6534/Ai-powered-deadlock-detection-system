@@ -35,7 +35,7 @@ bash
 Copy
 Edit
 # Clone the repository
-git clone https://github.com/your-username/deadlock-detection-ai.git
+git clone https://github.com/Adarsh-Kumar6534/deadlock-detection-ai.git
 cd deadlock-detection-ai
 
 # Install required dependencies
