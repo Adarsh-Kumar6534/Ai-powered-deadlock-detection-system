@@ -80,18 +80,22 @@ This project is licensed under the **MIT License**. Feel free to contribute and 
 ---
 
 ## 📂 Project Structure
-```plaintext
+
 AI-Deadlock-Detection/
-┣ 📁 src/                 # Source code
-┃ ┣ 📄 main.py             # Main application file
-┃ ┣ 📄 gui.py              # GUI implementation
-┃ ┣ 📄 deadlock_detection.py # Detection logic
-┃ ┣ 📄 resolution.py       # Resolution logic
-┣ 📁 docs/                 # Documentation
-┣ 📄 README.md             # Project overview
-┣ 📄 requirements.txt      # Dependencies
-┣ 📄 LICENSE               # License information
-```
+├── 📁 src/                     # Source Code - Core Logic & GUI
+│   ├── 🧑‍💻 main.py              # Main application to run the tool
+│   ├── 🖼 gui.py                # Graphical User Interface using PyQt6
+│   ├── 🧠 deadlock_detection.py # Deadlock Detection Algorithms
+│   ├── 🛠 resolution.py         # Deadlock Resolution Algorithms
+│
+├── 📁 docs/                    # Documentation
+│   ├── 📖 user_guide.md         # Step-by-Step User Guide
+│   ├── 📝 architecture.md       # Project Architecture Overview
+│   └── 📊 report.pdf            # Project Report
+│
+├── 📄 README.md                 # Project Overview & Instructions
+├── 📄 requirements.txt          # Dependencies for Installation
+├── 📄 LICENSE                   # License Information
 
 ---
 
