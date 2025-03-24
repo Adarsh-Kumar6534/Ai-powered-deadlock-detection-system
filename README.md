@@ -1,14 +1,14 @@
-# 🛠 AI-Powered Deadlock Detection & Resolution Tool  
+# 🛠 AI-Powered Deadlock Detection & Resolution Tool
 
-## 🔍 Overview  
-The **AI-Powered Deadlock Detection & Resolution Tool** is an advanced system designed to detect, analyze, and resolve deadlocks in process scheduling.  
-It leverages **graph theory, AI-based algorithms, and resource allocation strategies** to prevent deadlocks and optimize system performance.  
+## 🔍 Overview
+The **AI-Powered Deadlock Detection & Resolution Tool** is a smart system designed to detect, analyze, and resolve deadlocks in process scheduling.
+It leverages **graph theory, AI-based algorithms, and resource allocation strategies** to prevent deadlocks and optimize system performance.
 
-With an intuitive **Graphical User Interface (GUI)** powered by **PyQt6**, the tool provides a **visual representation** of processes, resources, and dependencies, making it easier to analyze and resolve conflicts efficiently.  
+With an intuitive **Graphical User Interface (GUI)** powered by **PyQt6**, the tool provides a **visual representation** of processes, resources, and dependencies, making it easier to analyze and resolve conflicts efficiently.
 
 ---
 
-## 🎯 Key Features  
+## 🎯 Key Features
 ✅ **Graph-Based Deadlock Detection** – Uses **NetworkX** to build a **Resource Allocation Graph (RAG)** and detect cyclic dependencies.  
 ✅ **Automated Resolution Mechanism** – AI-driven algorithms suggest **process preemption** and **resource reallocation**.  
 ✅ **Real-Time Visualization** – Interactive GUI displays **process dependencies** and **deadlock resolution** in real-time.  
@@ -18,95 +18,87 @@ With an intuitive **Graphical User Interface (GUI)** powered by **PyQt6**, the t
 
 ---
 
-## 🛠 Technologies Used  
+## 🛠 Technologies Used
 
 | **Technology** | **Purpose** |  
-|--------------|-------------|  
-| 🖥 **Python** | Core language for deadlock detection algorithms |  
-| 🎨 **PyQt6** | GUI framework for visualization & user interaction |  
-| 📈 **NetworkX** | Graph-based deadlock detection using cycle detection algorithms |  
-| 🔢 **NumPy** | Efficient matrix computations for graph representation |  
-| 📚 **Matplotlib** | Graphical visualization of deadlock scenarios |  
+|-----------------|-------------|  
+| **Python**       | Core language for algorithms |  
+| **PyQt6**        | GUI framework for visualization |  
+| **NetworkX**     | Graph-based detection using cycle detection algorithms |  
+| **NumPy**        | Efficient matrix computations |  
+| **Matplotlib**   | Visualization of deadlock scenarios |  
 
 ---
 
-## 🚀 How It Works  
+## 🚀 Installation
+Follow these steps to install dependencies and run the tool:
 
-The system follows a **structured five-step process** to ensure efficient **deadlock detection and resolution**:  
+```bash
+# Clone the repository
+git clone https://github.com/Adarsh-Kumar6534/deadlock-detection-ai.git
+cd deadlock-detection-ai
 
-1️⃣ **User Input:**  
-- Users define **processes and resources** through the GUI interface.  
-- Dependencies are mapped between **processes and resources**.  
+# Install required dependencies
+pip install PyQt6 networkx numpy matplotlib
 
-2️⃣ **Graph Construction:**  
-- The tool constructs a **Resource Allocation Graph (RAG)**.  
-- **Nodes** represent processes and resources, **edges** define allocations and requests.  
-
-3️⃣ **Deadlock Detection:**  
-- The system identifies **cycles in the graph** using **Depth-First Search (DFS)** and other **graph traversal methods**.  
-- If a cycle is detected, a **deadlock warning is triggered**.  
-
-4️⃣ **Automated Resolution:**  
-- The AI-powered system suggests the **best process/resource to preempt**.  
-- Possible solutions include **resource reallocation, priority scheduling, or process termination**.  
-
-5️⃣ **Visualization & Logging:**  
-- The **GUI updates dynamically** to show **resolved deadlocks**.  
-- A **log file is generated** for system analysis and debugging.  
+# Run the application
+python src/main.py
+```
 
 ---
 
-## 📌 Applications  
-
-The **AI-Powered Deadlock Detection & Resolution Tool** has real-world applications in various domains:  
-
-📌 **Operating Systems** – Helps in **process scheduling** by preventing resource conflicts.  
-📌 **Database Management Systems** – Detects **transaction-based deadlocks** in multi-user environments.  
-📌 **Distributed Computing** – Manages **resource allocation** in **cloud & parallel computing systems**.  
-📌 **Embedded Systems** – Ensures **safe process execution** in **real-time operating systems (RTOS)**.  
-📌 **AI & Machine Learning Pipelines** – Prevents **resource bottlenecks** in AI model **training and inference**.  
+## 🎯 How It Works
+1. **Define Process-Resource Dependencies**: Input processes and resources using the interactive GUI.
+2. **Graph Construction**: The system creates a Resource Allocation Graph (RAG).
+3. **Deadlock Detection**: It checks for cycles using Depth-First Search (DFS) or other algorithms.
+4. **Automated Resolution**: AI suggests and executes preemptive actions to resolve the deadlock.
+5. **Visualization & Logging**: Updates the UI in real-time and generates log reports.
 
 ---
 
-## 🔮 Future Enhancements  
-
-🚀 **Machine Learning Integration** – Implementing AI models to **predict and prevent deadlocks dynamically**.  
-🌐 **Cloud-Based Support** – Extending the tool for **distributed and cloud-based systems**.  
-📊 **Performance Analytics** – Generating **reports & insights** on system deadlock occurrences.  
-🔁 **Custom Scheduling Policies** – Allowing users to define & implement **custom scheduling algorithms**.  
-🎛 **Command-Line Interface (CLI) Support** – Adding a **CLI mode** for advanced users and automation.  
+## 📊 Performance Metrics
+- Track **deadlock frequency** and **resolution time**.
+- Visualize system performance with **interactive graphs**.
+- Generate reports for further analysis.
 
 ---
 
-## 🏗 Project Structure  
+## 🤝 Contribution Guidelines
+Contributions are welcome! Here's how you can contribute:
 
-📂 **AI-Deadlock-Detection/** *(Main project directory)*  
-┣ 📁 **src/** *(Source Code)*  
-┃ ┣ 📄 **main.py** *(Main application file)*  
-┃ ┣ 📄 **gui.py** *(GUI implementation using PyQt6)*  
-┃ ┣ 📄 **deadlock_detection.py** *(Graph-based deadlock detection logic)*  
-┃ ┣ 📄 **resolution.py** *(Automated deadlock resolution module)*  
-┣ 📁 **docs/** *(Documentation & Reports)*  
-┣ 📄 **README.md** *(Project Overview & Details)*  
-┣ 📄 **requirements.txt** *(List of dependencies)*  
-┣ 📄 **LICENSE** *(Open-source license information)*  
+1. **Fork** the repository.
+2. **Create a new branch** (`feature-new-improvement`).
+3. **Commit your changes**.
+4. **Push to your fork**.
+5. **Create a Pull Request**.
 
 ---
 
-## 👨‍💻 Developed By  
+## 📜 License
+This project is licensed under the **MIT License**. Feel free to contribute and improve! 🚀
 
+---
+
+## 📂 Project Structure
+```plaintext
+AI-Deadlock-Detection/
+┣ 📁 src/                 # Source code
+┃ ┣ 📄 main.py             # Main application file
+┃ ┣ 📄 gui.py              # GUI implementation
+┃ ┣ 📄 deadlock_detection.py # Detection logic
+┃ ┣ 📄 resolution.py       # Resolution logic
+┣ 📁 docs/                 # Documentation
+┣ 📄 README.md             # Project overview
+┣ 📄 requirements.txt      # Dependencies
+┣ 📄 LICENSE               # License information
+```
+
+---
+
+## 🚀 Developed By
 🎓 **Adarsh Kumar**  
 🎓 **Anurag Anand Jha**  
 🎓 **Sukhpreet Kaur**  
 
-🚀 **We aim to enhance system performance by eliminating deadlocks efficiently!**  
+We aim to enhance system performance by eliminating deadlocks efficiently!
 
----
-
- 
-Copy
-Edit
-python src/main.py  
-📜 License
-This project is open-source and distributed under the MIT License.
-Feel free to contribute and improve! 🚀  
