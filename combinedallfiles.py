@@ -2,184 +2,171 @@ import sys
 import networkx as nx
 import numpy as np
 from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout,
-    QWidget, QTextEdit, QTableWidget, QTableWidgetItem, QHeaderView
+    QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QHBoxLayout,
+    QWidget, QTextEdit, QTableWidget, QTableWidgetItem, QHeaderView, QGraphicsDropShadowEffect
 )
-from PyQt6.QtGui import QFont, QColor
-from PyQt6.QtCore import QTimer
+from PyQt6.QtGui import QFont, QColor, QBrush, QLinearGradient
+from PyQt6.QtCore import QTimer, Qt
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 class DeadlockDetectionAI(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("AI-Powered Deadlock Detector")
+        self.setWindowTitle("AI Deadlock Detection System")
         self.setGeometry(100, 100, 1000, 650)
-        self.setStyleSheet("background-color: #1E1E2E; color: white;")
-        
-        self.initUI()
+        # Background gradient: Light Sky Blue (#B3E5FC) to Sky Blue (#4FC3F7)
+        self.setStyleSheet("""
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #B3E5FC, stop:1 #4FC3F7);
+        """)
+       
         self.deadlock_graph = nx.DiGraph()
-    
-    def initUI(self):
-        layout = QVBoxLayout()
-        
-        self.label = QLabel("AI Deadlock Detection Tool", self)
-        self.label.setFont(QFont("Arial", 20, QFont.Weight.Bold))
-        self.label.setStyleSheet("color: #FFD700;")
-        layout.addWidget(self.label)
-        
-        self.detect_button = QPushButton("Detect Deadlock", self)
-        self.detect_button.setStyleSheet(self.button_style("#4CAF50"))
-        self.detect_button.clicked.connect(self.detect_deadlock)
-        layout.addWidget(self.detect_button)
+        self.initUI()
 
+    def initUI(self):
+        # Main layout
+        main_layout = QVBoxLayout()
+
+        # Title
+        self.label = QLabel("AI Deadlock Detection System")
+        self.label.setFont(QFont("Helvetica", 24, QFont.Weight.Bold))  # Fallback to Helvetica
+        self.label.setStyleSheet("""
+            color: #000000;  /* Black */
+            background: transparent;
+            padding: 5px;
+            border: 2px solid #000000;
+            border-radius: 5px;
+        """)
+        # Add a shadow effect for 3D look
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(10)
+        shadow.setXOffset(3)
+        shadow.setYOffset(3)
+        shadow.setColor(QColor(0, 0, 0, 160))
+        self.label.setGraphicsEffect(shadow)
+        self.label.setFixedHeight(50)  # Ensure the title stays at the top
+        main_layout.addWidget(self.label, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        # Two-part layout (left and right halves)
+        two_part_layout = QHBoxLayout()
+
+        # Left Half: Table and Buttons
+        left_layout = QVBoxLayout()
         self.table = QTableWidget(5, 5)
         self.table.setHorizontalHeaderLabels(["P1", "P2", "P3", "P4", "P5"])
         self.table.setVerticalHeaderLabels(["P1", "P2", "P3", "P4", "P5"])
-        self.table.setStyleSheet("background-color: #2E2E3E; color: white; font-size: 14px;")
+        self.table.setStyleSheet("""
+            QTableWidget {
+                background-color: #FFFFFF;
+                color: black;
+                font-size: 14px;
+                border: 1px solid black;
+            }
+            QHeaderView::section {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #26A69A, stop:1 #FF6F61);
+                color: white;
+                font-weight: bold;
+            }
+        """)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        layout.addWidget(self.table)
+        left_layout.addWidget(self.table)
 
-        self.result_area = QTextEdit(self)
-        self.result_area.setReadOnly(True)
-        self.result_area.setStyleSheet("background-color: #333B44; color: white; font-size: 14px;")
-        layout.addWidget(self.result_area)
+        # Buttons
+        button_layout = QHBoxLayout()
+        self.detect_button = QPushButton("Detect Deadlock")
+        self.detect_button.setStyleSheet(self.button_style("#26A69A"))  # Teal
+        self.detect_button.clicked.connect(self.detect_deadlock)
+        # Add 3D shadow effect
+        detect_shadow = QGraphicsDropShadowEffect()
+        detect_shadow.setBlurRadius(15)
+        detect_shadow.setXOffset(5)
+        detect_shadow.setYOffset(5)
+        detect_shadow.setColor(QColor(0, 0, 0, 100))
+        self.detect_button.setGraphicsEffect(detect_shadow)
+        button_layout.addWidget(self.detect_button)
 
-        self.fix_button = QPushButton("Fix Deadlock", self)
-        self.fix_button.setStyleSheet(self.button_style("#FF5722"))
+        self.fix_button = QPushButton("Fix Deadlock")
+        self.fix_button.setStyleSheet(self.button_style("#FF6F61"))  # Coral Pink
         self.fix_button.clicked.connect(self.fix_deadlock)
-        layout.addWidget(self.fix_button)
+        # Add 3D shadow effect
+        fix_shadow = QGraphicsDropShadowEffect()
+        fix_shadow.setBlurRadius(15)
+        fix_shadow.setXOffset(5)
+        fix_shadow.setYOffset(5)
+        fix_shadow.setColor(QColor(0, 0, 0, 100))
+        self.fix_button.setGraphicsEffect(fix_shadow)
+        button_layout.addWidget(self.fix_button)
 
+        left_layout.addLayout(button_layout)
+        two_part_layout.addLayout(left_layout, stretch=1)  # Left half takes 50% of the space
+
+        # Right Half: Bar Chart and Message Log (split vertically)
+        right_layout = QVBoxLayout()
+
+        # Bar Chart (Top)
+        self.figure = Figure(figsize=(4, 3))
+        # Make the figure background transparent
+        self.figure.patch.set_alpha(0)
+        self.canvas = FigureCanvas(self.figure)
+        # Apply gradient background to the canvas
+        self.canvas.setStyleSheet("""
+            border: 1px solid #000000;
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #B3E5FC, stop:1 #4FC3F7);
+        """)
+        # Connect click event for bar interaction
+        self.canvas.mpl_connect('button_press_event', self.on_bar_click)
+        right_layout.addWidget(self.canvas, stretch=1)
+        self.update_chart()
+
+        # Message Log (Bottom)
+        self.message_log = QTextEdit()
+        self.message_log.setReadOnly(True)
+        self.message_log.setStyleSheet("""
+            QTextEdit {
+                background-color: #F5E6E8;
+                color: black;
+                font-size: 16px;
+                border: none;
+            }
+        """)
+        # Add a shadow effect for neon look
+        message_shadow = QGraphicsDropShadowEffect()
+        message_shadow.setBlurRadius(15)
+        message_shadow.setXOffset(0)
+        message_shadow.setYOffset(0)
+        message_shadow.setColor(QColor(255, 255, 255, 200))  # White glow for neon effect
+        self.message_log.setGraphicsEffect(message_shadow)
+        self.add_message("System initialized...")
+        right_layout.addWidget(self.message_log, stretch=1)
+
+        two_part_layout.addLayout(right_layout, stretch=1)  # Right half takes 50% of the space
+
+        main_layout.addLayout(two_part_layout)
+
+        # Set the central widget
         container = QWidget()
-        container.setLayout(layout)
+        container.setLayout(main_layout)
         self.setCentralWidget(container)
 
     def button_style(self, color):
+        # Create a gradient for the button to enhance the 3D effect
         return f"""
         QPushButton {{
-            background-color: {color};
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 {color}, stop:1 {self.darken_color(color)});
             color: white;
             font-size: 16px;
             border-radius: 8px;
             padding: 8px;
+            border: 2px solid {self.darken_color(color)};
         }}
         QPushButton:hover {{
-            background-color: {self.darken_color(color)};
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 {self.lighten_color(color)}, stop:1 {color});
+        }}
+        QPushButton:pressed {{
+            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 {self.darken_color(color)}, stop:1 {color});
         }}
         """
-    def darken_color(self, color):
-        return f"{color[:-2]}AA"
 
-    def get_table_data(self):
-        graph = nx.DiGraph()
-        processes = ["P1", "P2", "P3", "P4", "P5"]
-        
-        for i in range(5):
-            for j in range(5):
-                item = self.table.item(i, j)
-                if item and item.text() == "1":
-                    graph.add_edge(processes[i], processes[j])
-        
-        return graph
     
-    def detect_deadlock(self):
-        self.deadlock_graph = self.get_table_data()
-        
-        if len(self.deadlock_graph.nodes) == 0:
-            self.result_area.setText("No valid process dependencies found.")
-            return
-        
-        deadlock_type = self.identify_deadlock_type()
-        
-        if "No Deadlock" in deadlock_type:
-            self.result_area.setText("✅ No Deadlock Detected.")
-        else:
-            cycle = list(nx.find_cycle(self.deadlock_graph, orientation='original')) if "Circular Wait" in deadlock_type else []
-            self.result_area.setText(f"⚠️ **Deadlock Detected!** {deadlock_type}\nCycle: {cycle}")
-            self.highlight_deadlock([p[0] for p in cycle])
-
-    def identify_deadlock_type(self):
-        if not self.deadlock_graph:
-            return "No Deadlock"
-
-        edges = list(self.deadlock_graph.edges)
-        if not edges:
-            return "No Deadlock"
-
-        processes = list(self.deadlock_graph.nodes)
-        edges_set = set(edges)
-
-        if any(u == v for u, v in edges):
-            return "🔴 Mutual Exclusion Deadlock (Self-loop detected)."
-        
-        if any((v, u) in edges_set for u, v in edges):
-            return "🟡 No Preemption Deadlock (Irreversible resource holding)."
-
-        hold_wait_detected = any(any((u, v) in edges_set for v in processes) for u in processes)
-
-        try:
-            nx.find_cycle(self.deadlock_graph, orientation="original")
-            return "🟠 Circular Wait Deadlock (Processes waiting in a cycle)."
-        except nx.NetworkXNoCycle:
-            pass
-
-        if hold_wait_detected:
-            return "🔵 Hold and Wait Deadlock (Processes holding resources and waiting)."
-
-        return "No Deadlock"
-
-    def highlight_deadlock(self, deadlocked_processes):
-        for process in deadlocked_processes:
-            idx = int(process[1:]) - 1  
-            for col in range(self.table.columnCount()):
-                item = self.table.item(idx, col) or QTableWidgetItem("")
-                item.setBackground(QColor("#FF4500"))
-                self.table.setItem(idx, col, item)
-    
-    def fix_deadlock(self):
-        if not self.deadlock_graph:
-            self.result_area.append("No deadlock detected to fix.")
-            return
-        
-        try:
-            cycle = nx.find_cycle(self.deadlock_graph, orientation='original')
-            process_to_remove = cycle[0][0]
-            self.deadlock_graph.remove_node(process_to_remove)
-            self.update_table()
-            self.result_area.append(f"✅ Deadlock Resolved! Process {process_to_remove} preempted.")
-            self.highlight_fix()
-        except nx.NetworkXNoCycle:
-            self.result_area.append("No deadlock to fix.")
-    
-    def update_table(self):
-        processes = ["P1", "P2", "P3", "P4", "P5"]
-        
-        for i in range(5):
-            for j in range(5):
-                item = self.table.item(i, j)
-                if item:
-                    item.setText("1" if (processes[i], processes[j]) in self.deadlock_graph.edges else "0")
-    
-    def highlight_fix(self):
-        for row in range(self.table.rowCount()):
-            for col in range(self.table.columnCount()):
-                item = self.table.item(row, col)
-                if item:
-                    item.setBackground(QColor("#4CAF50"))  
-        QTimer.singleShot(15000, self.reset_table)  
-
-    def reset_table(self):
-        """ Resets the table background color back to original after 15 seconds, keeping data intact. """
-        for row in range(self.table.rowCount()):
-            for col in range(self.table.columnCount()):
-                item = self.table.item(row, col)
-                if item:
-                    item.setBackground(QColor("#2E2E3E"))  # Reset color to match table's original background
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = DeadlockDetectionAI()
-    window.show()
-    sys.exit(app.exec())
-
-
-
