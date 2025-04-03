@@ -1,114 +1,129 @@
-from PyQt6.QtWidgets import (
-    QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget,
-    QTextEdit, QTableWidget, QTableWidgetItem, QHeaderView
-)
-from PyQt6.QtGui import QFont, QColor
-from PyQt6.QtCore import QTimer
-from deadlock_detection.detection import DeadlockDetector
-from deadlock_detection.styles import button_style
-import networkx as nx
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+import numpy as np
+
+class DependencyChart(FigureCanvas):
+    def __init__(self):
+        self.figure = Figure(figsize=(4, 3))
+        super().__init__(self.figure)
+        self.setup_chart()
+
+    def setup_chart(self):
+        self.ax = self.figure.add_subplot(111)
+        self.ax.set_facecolor('#F5F5F5')
+        self.figure.patch.set_alpha(0)
+
+    def update_chart(self, graph_data: dict):
+        self.ax.clear()
+        
+        # Chart drawing logic here
+        self.draw()
 
 
-class DeadlockDetectionUI(QMainWindow):
+from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QWidget
+from ui.table import ProcessTable
+from ui.chart import DependencyChart
+from ui.message_log import MessageLog
+from core.graph_manager import GraphManager
+from core.detector import DeadlockDetector
+
+class DeadlockDetectionAI(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("AI-Powered Deadlock Detector")
-        self.setGeometry(100, 100, 1000, 650)
-        self.setStyleSheet("background-color: #1E1E2E; color: white;")
-
+        self.graph_manager = GraphManager()
         self.detector = DeadlockDetector()
-        self.initUI()
+        self.init_ui()
 
-    def initUI(self):
-        layout = QVBoxLayout()
-
-        self.label = QLabel("AI Deadlock Detection Tool", self)
-        self.label.setFont(QFont("Arial", 20, QFont.Weight.Bold))
-        self.label.setStyleSheet("color: #FFD700;")
-        layout.addWidget(self.label)
-
-        self.detect_button = QPushButton("Detect Deadlock", self)
-        self.detect_button.setStyleSheet(button_style("#4CAF50"))
-        self.detect_button.clicked.connect(self.detect_deadlock)
-        layout.addWidget(self.detect_button)
-
-        self.table = QTableWidget(5, 5)
-        self.table.setHorizontalHeaderLabels(["P1", "P2", "P3", "P4", "P5"])
-        self.table.setVerticalHeaderLabels(["P1", "P2", "P3", "P4", "P5"])
-        self.table.setStyleSheet("background-color: #2E2E3E; color: white; font-size: 14px;")
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        layout.addWidget(self.table)
-
-        self.result_area = QTextEdit(self)
-        self.result_area.setReadOnly(True)
-        self.result_area.setStyleSheet("background-color: #333B44; color: white; font-size: 14px;")
-        layout.addWidget(self.result_area)
-
-        self.fix_button = QPushButton("Fix Deadlock", self)
-        self.fix_button.setStyleSheet(button_style("#FF5722"))
-        self.fix_button.clicked.connect(self.fix_deadlock)
-        layout.addWidget(self.fix_button)
-
+    def init_ui(self):
+        self.setWindowTitle("AI Deadlock Detection System")
+        self.setGeometry(100, 100, 1000, 650)
+        
+        # Create UI components
+        self.table = ProcessTable()
+        self.chart = DependencyChart()
+        self.message_log = MessageLog()
+        
+        # Layout setup
+        main_layout = QVBoxLayout()
+        content_layout = QHBoxLayout()
+        
+        left_layout = QVBoxLayout()
+        left_layout.addWidget(self.table)
+        left_layout.addWidget(self.create_buttons())
+        
+        right_layout = QVBoxLayout()
+        right_layout.addWidget(self.chart)
+        right_layout.addWidget(self.message_log)
+        
+        content_layout.addLayout(left_layout, stretch=1)
+        content_layout.addLayout(right_layout, stretch=1)
+        main_layout.addLayout(content_layout)
+        
         container = QWidget()
-        container.setLayout(layout)
+        container.setLayout(main_layout)
         self.setCentralWidget(container)
 
-    def get_table_data(self):
-        graph = nx.DiGraph()
-        processes = ["P1", "P2", "P3", "P4", "P5"]
+    def create_buttons(self):
+        # Button creation and connections
+        pass
 
+    # Other main window methods...
+
+from PyQt6.QtWidgets import QTextEdit
+from PyQt6.QtGui import QColor
+
+class MessageLog(QTextEdit):
+    def __init__(self):
+        super().__init__()
+        self.setup_log()
+
+    def setup_log(self):
+        self.setReadOnly(True)
+        self.setStyleSheet("""
+            QTextEdit {
+                background-color: #F5E6E8;
+                color: black;
+                font-size: 16px;
+                border: none;
+            }
+        """)
+
+    def add_message(self, message: str, message_type: str = "info"):
+        colors = {
+            "info": "black",
+            "warning": "orange",
+            "error": "red",
+            "success": "green"
+        }
+        self.append(f'<p style="color:{colors[message_type]}">{message}</p>')
+
+from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
+from PyQt6.QtGui import QBrush, QColor, QLinearGradient
+
+class ProcessTable(QTableWidget):
+    def __init__(self):
+        super().__init__(5, 5)
+        self.setup_table()
+
+    def setup_table(self):
+        self.setHorizontalHeaderLabels(["P1", "P2", "P3", "P4", "P5"])
+        self.setVerticalHeaderLabels(["P1", "P2", "P3", "P4", "P5"])
+        self.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        
         for i in range(5):
             for j in range(5):
-                item = self.table.item(i, j)
-                if item and item.text() == "1":
-                    graph.add_edge(processes[i], processes[j])
+                self.setItem(i, j, QTableWidgetItem("0"))
 
-        return graph
-
-    def detect_deadlock(self):
-        self.detector.deadlock_graph = self.get_table_data()
-        result, cycle = self.detector.detect_deadlock()
-
-        self.result_area.setText(result)
-
-        if cycle:
-            self.highlight_deadlock([p[0] for p in cycle])
-
-    def fix_deadlock(self):
-        fixed_message = self.detector.fix_deadlock()
-        self.result_area.append(fixed_message)
-        self.update_table()
-        self.highlight_fix()
-
-    def update_table(self):
-        processes = ["P1", "P2", "P3", "P4", "P5"]
-
+    def get_table_data(self) -> list[list[str]]:
+        data = []
         for i in range(5):
+            row = []
             for j in range(5):
-                item = self.table.item(i, j)
-                if item:
-                    item.setText("1" if (processes[i], processes[j]) in self.detector.deadlock_graph.edges else "0")
+                item = self.item(i, j)
+                row.append(item.text() if item else "0")
+            data.append(row)
+        return data
 
-    def highlight_deadlock(self, deadlocked_processes):
-        for process in deadlocked_processes:
-            idx = int(process[1:]) - 1
-            for col in range(self.table.columnCount()):
-                item = self.table.item(idx, col) or QTableWidgetItem("")
-                item.setBackground(QColor("#FF4500"))
-                self.table.setItem(idx, col, item)
-
-    def highlight_fix(self):
-        for row in range(self.table.rowCount()):
-            for col in range(self.table.columnCount()):
-                item = self.table.item(row, col)
-                if item:
-                    item.setBackground(QColor("#4CAF50"))
-        QTimer.singleShot(15000, self.reset_table)
-
-    def reset_table(self):
-        for row in range(self.table.rowCount()):
-            for col in range(self.table.columnCount()):
-                item = self.table.item(row, col)
-                if item:
-                    item.setBackground(QColor("#2E2E3E"))
+    def highlight_processes(self, processes: list[str], color_gradient: tuple[str, str]):
+        pass
